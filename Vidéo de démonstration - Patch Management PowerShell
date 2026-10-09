@@ -1,0 +1,26 @@
+https://drive.google.com/file/d/1zzGgSp5tsXkzW8irtIP-GkLZDnMvV1JQ/view?usp=sharing
+
+
+**Auteur :** Sami De Waal (I2) - Module Sécurité des systèmes d'exploitation
+**Durée :** 5 min 22 (les attentes d'audit sont accélérées et signalées à l'écran)
+
+Démonstration commentée de la solution de Patch Management Windows en PowerShell, exécutée sur un poste Windows 11 réel.
+
+## Contenu de la vidéo
+
+| Minutage | Étape |
+|---|---|
+| 0:00 | Introduction du projet |
+| 0:22 | Dossier du projet et fichiers de configuration (computers.txt, required-patches.txt) |
+| 0:59 | Préparation de l'environnement : disponibilité du poste, service WinRM, Test-Connection / Test-WSMan |
+| 1:48 | Lancement de l'orchestrateur : audit du poste, résultat NON CONFORME (3 KB manquants) |
+| 2:21 | Synthèse, taux de conformité (0 %), notification construite sur anomalie |
+| 2:59 | Modification de la politique : le poste ressort CONFORME (100 %) |
+| 3:30 | Retour à la vraie politique : le poste repasse NON CONFORME |
+| 4:08 | Fichiers générés dans output (CSV) |
+| 4:27 | Journal PatchManager.log |
+| 4:45 | Rapport HTML pour l'administrateur |
+| 4:59 | Conclusion |
+
+## Lien de la vidéo (Google Drive, accès par lien)
+https://drive.google.com/file/d/1zzGgSp5tsXkzW8irtIP-GkLZDnMvV1JQ/view?usp=sharing
