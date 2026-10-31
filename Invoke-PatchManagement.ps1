@@ -111,12 +111,16 @@ foreach ($poste in $parc) {
     try {
         $patches = Get-NodePatches -ComputerName $ip -Credential $Credential
         $installed = $patches.HotFixID
+        # DateTri = vraie date (type DateTime), cle de tri technique : le texte
+        # jj/MM/aaaa ne se trie pas chronologiquement (le jour passe avant l'annee).
+        # Cette colonne n'est pas exportee dans le CSV.
         foreach ($p in ($patches | Sort-Object InstalledOn -Descending)) {
             $patchesAll.Add([pscustomobject]@{
                 Poste = $nom; AdresseIP = $ip; KB = $p.HotFixID
                 Description = $p.Description
                 DateInstallation = $(if ($p.InstalledOn) { $p.InstalledOn.ToString('dd/MM/yyyy') } else { '' })
                 InstallePar = $p.InstalledBy
+                DateTri = $(if ($p.InstalledOn) { $p.InstalledOn } else { [datetime]::MinValue })
             })
         }
     }
@@ -146,18 +150,27 @@ foreach ($poste in $parc) {
     })
 }
 
+# ---- Tableau recapitulatif de l'inventaire (Partie 2.4) --------------
+Write-Host "`n--- Inventaire du parc ---" -ForegroundColor Cyan
+$inventaire | Select-Object Poste, AdresseIP, Windows, Architecture, DernierDemarrage, WindowsUpdate, Etat |
+    Format-Table -AutoSize -Wrap
+
 # ======================================================================
 #  EXPORTS CSV (Parties 2.4, 3.6, 4.5)
 # ======================================================================
-$inventaire | Export-Csv -Path $InventoryCsv  -NoTypeInformation -Encoding UTF8 -Delimiter ';'
-$patchesAll | Sort-Object Poste, @{Expression='DateInstallation';Descending=$true} |
+# Colonnes explicites : meme jeu de colonnes pour tous les postes, y compris INACCESSIBLE
+$inventaire | Select-Object Poste, AdresseIP, Windows, Architecture, DernierDemarrage, RAM_Go,
+                  DisqueLibre_Go, VersionBios, Modele, DerniereMaj, NbMaj, WindowsUpdate, Etat, Erreur |
+    Export-Csv -Path $InventoryCsv -NoTypeInformation -Encoding UTF8 -Delimiter ';'
+$patchesAll | Sort-Object Poste, @{Expression='DateTri';Descending=$true} |
+    Select-Object Poste, AdresseIP, KB, Description, DateInstallation, InstallePar |
     Export-Csv -Path $PatchesCsv -NoTypeInformation -Encoding UTF8 -Delimiter ';'
 $rapport | Export-Csv -Path $ComplianceCsv -NoTypeInformation -Encoding UTF8 -Delimiter ';'
 
 # ---- Recapitulatif correctifs par poste (Partie 3.6) -----------------
 Write-Host "`n--- Recapitulatif correctifs par poste ---" -ForegroundColor Cyan
 $patchesAll | Group-Object Poste | ForEach-Object {
-    $dernier = $_.Group | Sort-Object DateInstallation -Descending | Select-Object -First 1
+    $dernier = $_.Group | Sort-Object DateTri -Descending | Select-Object -First 1
     [pscustomobject]@{
         Poste = $_.Name; NbCorrectifs = $_.Count
         DernierCorrectif = $dernier.DateInstallation; DerniereKB = $dernier.KB

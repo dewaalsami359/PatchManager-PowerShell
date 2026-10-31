@@ -1,0 +1,6 @@
+# Exemple de fichier d'inventaire (format : Nom;IP), tel que dans l'enonce.
+# Les adresses sont fictives : ces postes ressortent INACCESSIBLE.
+# Pour essayer : ajouter ces lignes a la suite de computers.txt.
+PC01;192.168.1.20
+PC02;192.168.1.21
+PC03;192.168.1.22
